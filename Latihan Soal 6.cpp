@@ -11,25 +11,8 @@ int main() {
     cout << "Masukkan bilangan ke-3: ";
     cin >> bilangan3;
 
-    int terbesar, terkecil;
-
-    // Menentukan bilangan terbesar
-    if (bilangan1 >= bilangan2 && bilangan1 >= bilangan3) {
-        terbesar = bilangan1;
-    } else if (bilangan2 >= bilangan1 && bilangan2 >= bilangan3) {
-        terbesar = bilangan2;
-    } else {
-        terbesar = bilangan3;
-    }
-
-    // Menentukan bilangan terkecil
-    if (bilangan1 <= bilangan2 && bilangan1 <= bilangan3) {
-        terkecil = bilangan1;
-    } else if (bilangan2 <= bilangan1 && bilangan2 <= bilangan3) {
-        terkecil = bilangan2;
-    } else {
-        terkecil = bilangan3;
-    }
+    int terbesar = max(bilangan1, max(bilangan2, bilangan3));
+    int terkecil = min(bilangan1, min(bilangan2, bilangan3));
 
     cout << "Bilangan Terbesar adalah: " << terbesar << endl;
     cout << "Bilangan Terkecil adalah: " << terkecil << endl;
