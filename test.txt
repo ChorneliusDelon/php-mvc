@@ -1,211 +1,37 @@
-// App.js
-import React from "react";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
-import Profile from "./pages/Profile";
-import Upload from "./pages/Upload";
+<!DOCTYPE html>
+<html>
 
-function App() {
-  return (
-    <BrowserRouter>
-      <Navbar />
-      <Switch>
-        <Route exact path="/" component={Home} />
-        <Route path="/profile/:id" component={Profile} />
-        <Route path="/upload" component={Upload} />
-      </Switch>
-    </BrowserRouter>
-  );
-}
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
 
-export default App;
+<body>
+  <h1>Fakta tentang Miku</h1>
 
-// Navbar.js
-import React from "react";
-import { Link } from "react-router-dom";
+  <p>Ini Hatsune Miku, virtual vocaloid yang banyak digemari oleh para wibuers.</p>
 
-function Navbar() {
-  return (
-    <nav>
-      <Link to="/">Home</Link>
-      <Link to="/profile/1">Profile</Link>
-      <Link to="/upload">Upload</Link>
-    </nav>
-  );
-}
+  <img src="https://static.miraheze.org/projectsekaiwiki/9/93/Hatsune_Miku.png" width=300 />
 
-export default Navbar;
+  <h2>Daftar isi</h2>
+  <ol>
+    <li><a href="#konten1">Konten 1</a></li>
+    <li><a href="#konten2">Konten 2</a></li>
+    <li><a href="#konten3">Konten 3</a></li>
+  </ol>
 
-// Home.js
-import React, { useEffect, useState } from "react";
-import { db } from "../firebase";
+  <h3 id="konten1">Konten 1</h3>
 
-function Home() {
-  const [posts, setPosts] = useState([]);
+  <p>Hatsune Miku sebenarnya berasal dari software singing synthesizer yang dikembangkan oleh Crypton Future Media. Hatsune Miku digambarkan sebagai sosok cewek imut berambut twintail dengan warna hijau muda. Dia punya figur gadis remaja dengan tinggi 158 centimeter dan berat 42 kilogram. ayam goreng mentgea bakarrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrerrrrrrr</p>
+  
+  <h3 id="konten2">Konten 2</h3>
 
-  useEffect(() => {
-    db.collection("posts")
-      .orderBy("timestamp", "desc")
-      .onSnapshot((snapshot) => {
-        setPosts(
-          snapshot.docs.map((doc) => ({
-            id: doc.id,
-            data: doc.data(),
-          }))
-        );
-      });
-  }, []);
+  <p>Istilah vocaloid merujuk pada perangkat lunak produksi Yamaha Corporation yang menghasilkan suara nyanyian manusia. Hatsune Miku terlahir sebagai Vocaloid2 milik Yamaha yang pertama kali dirilis pada tanggal 31 Agustus 2007. Super duper brrrrrrrrrrrtrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrfrrfffffffffffffffffrfffffffffffrfffffff</p>
 
-  return (
-    <div>
-      <h1>Home</h1>
-      {posts.map((post) => (
-        <div key={post.id}>
-          <img src={post.data.image} alt="Post" />
-          <p>{post.data.caption}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
+  <h3 id="konten3">Konten 3</h3>
 
-export default Home;
+  <p>Nama Hatsune Miku mengandung arti "The First Sound Of The Future" atau dalam Bahasa Indonesia berarti lagu pertama untuk masa depan. Sebuah nama yang mencerminkan fungsinya sebagai pelantun lagu. Siuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu</p>
+  
+  <script src="script.js"></script>
+</body>
 
-// Profile.js
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { db } from "../firebase";
-
-function Profile() {
-  const { id } = useParams();
-  const [user, setUser] = useState(null);
-  const [posts, setPosts] = useState([]);
-
-  useEffect(() => {
-    db.collection("users")
-      .doc(id)
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          setUser(doc.data());
-        }
-      });
-  }, [id]);
-
-  useEffect(() => {
-    db.collection("posts")
-      .where("userId", "==", id)
-      .orderBy("timestamp", "desc")
-      .onSnapshot((snapshot) => {
-        setPosts(
-          snapshot.docs.map((doc) => ({
-            id: doc.id,
-            data: doc.data(),
-          }))
-        );
-      });
-  }, [id]);
-
-  return (
-    <div>
-      <h1>Profile</h1>
-      {user && (
-        <div>
-          <img src={user.photo} alt="User" />
-          <p>{user.name}</p>
-        </div>
-      )}
-      {posts.map((post) => (
-        <div key={post.id}>
-          <img src={post.data.image} alt="Post" />
-          <p>{post.data.caption}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-export default Profile;
-
-// Upload.js
-import React, { useState } from "react";
-import { storage, db } from "../firebase";
-import firebase from "firebase";
-
-function Upload() {
-  const [image, setImage] = useState(null);
-  const [caption, setCaption] = useState("");
-  const [progress, setProgress] = useState(0);
-
-  const handleChange = (e) => {
-    if (e.target.files[0]) {
-      setImage(e.target.files[0]);
-    }
-  };
-
-  const handleUpload = () => {
-    const uploadTask = storage.ref(`images/${image.name}`).put(image);
-
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
-        setProgress(progress);
-      },
-      (error) => {
-        console.log(error);
-      },
-      () => {
-        storage
-          .ref("images")
-          .child(image.name)
-          .getDownloadURL()
-          .then((url) => {
-            db.collection("posts").add({
-              image: url,
-              caption: caption,
-              userId: "1",
-              timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            });
-            setProgress(0);
-            setCaption("");
-            setImage(null);
-          });
-      }
-    );
-  };
-
-  return (
-    <div>
-      <h1>Upload</h1>
-      <input type="file" onChange={handleChange} />
-      <input
-        type="text"
-        placeholder="Enter a caption"
-        value={caption}
-        onChange={(e) => setCaption(e.target.value)}
-      />
-      <button onClick={handleUpload}>Upload</button>
-      <progress value={progress} max="100" />
-    </div>
-  );
-}
-
-export default Upload;
-
-// firebase.js
-import firebase from "firebase";
-
-const firebaseConfig = {
-  // Your firebase configuration here
-};
-
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-
-const db = firebaseApp.firestore();
-const storage = firebaseApp.storage();
-
-export { db, storage };
+</html>
